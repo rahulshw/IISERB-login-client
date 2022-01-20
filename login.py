@@ -5,7 +5,7 @@ import threading
 
 import requests
 
-REFRESH_INTERVAL = 5  # in seconds
+REFRESH_INTERVAL = 3600  # in seconds
 
 
 def get_magic_hash():

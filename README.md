@@ -5,7 +5,8 @@
 
 ## How to use
 1. Clone this repo and cd to this directory
-2. run `python login.py` and enter the username and password as prompted. You can also use command line options for this, check `python login.py --help` for that
+2. run `pip install -r requirements.txt`
+3. run `python login.py` and enter the username and password as prompted. You can also use command line options for this, check `python login.py --help` for that
 
 #### Note
 This client is useful for connecting to the wifi named: iiserb.
