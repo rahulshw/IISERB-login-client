@@ -4,6 +4,7 @@ import re
 import signal
 import sys
 import threading
+from datetime import datetime
 
 import requests
 
@@ -21,7 +22,7 @@ def get_magic_hash():
 
 def logout(magic_hash):
     r = requests.get(f'https://gateway.iiserb.ac.in:1003/logout?{magic_hash}')
-    print(f'you have successfully logged out. magic hash: {magic_hash}')
+    print(f'you have successfully logged out. date: {datetime.now()}. magic hash: {magic_hash}')
 
 
 def send_login_request(username, password, magic_hash):
@@ -38,7 +39,7 @@ def send_login_request(username, password, magic_hash):
     }
     r = requests.post('https://gateway.iiserb.ac.in:1003', headers=headers, data=payload)
     if r.status_code == 200:
-        print(f'you are successfully logged in. magic hash: {magic_hash}')
+        print(f'you are successfully logged in. date: {datetime.now()} magic hash: {magic_hash}')
 
 
 def refresh_login(username, password, magic_hash=None):
