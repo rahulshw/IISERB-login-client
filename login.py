@@ -1,6 +1,8 @@
 import argparse
 import getpass
 import re
+import signal
+import sys
 import threading
 
 import requests
@@ -8,8 +10,11 @@ import requests
 REFRESH_INTERVAL = 3600  # in seconds
 
 
+global_magic_hash = None
+
+
 def get_magic_hash():
-    r = requests.get('https://www.google.com', verify=False)
+    r = requests.get('http://www.gstatic.com/generate_204')
     hashes = re.findall('<input type="hidden" name="magic" value="(.+?)">', r.text)
     return hashes[0] if hashes else None
 
@@ -41,16 +46,19 @@ def refresh_login(username, password, magic_hash=None):
         magic_hash = get_magic_hash()
         if not magic_hash:
             print('Looks like you are already logged in. Try running after sometime. ')
-            return
+            return False
     else:
         logout(magic_hash)
         magic_hash = get_magic_hash()
 
+    global global_magic_hash
+    global_magic_hash = magic_hash
     r = send_login_request(username, password, magic_hash)
 
     timer = threading.Timer(REFRESH_INTERVAL, refresh_login, args=(username, password, magic_hash))
     timer.daemon = True
     timer.start()
+    return True
 
 
 def get_credentials():
@@ -67,6 +75,17 @@ def get_credentials():
     return username, password
 
 
+def handle_interrupt(_, __):
+    print('Keyboard Interrupt received. Logging out.', logout(global_magic_hash))
+    sys.exit(0)
+
+
+signal.signal(signal.SIGINT, handle_interrupt)
+
 if __name__ == '__main__':
     username, password = get_credentials()
-    refresh_login(username, password)
+    if refresh_login(username, password):
+        signal.pause()
+    else:
+        exit(1)
+
